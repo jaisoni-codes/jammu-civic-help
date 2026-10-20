@@ -14,7 +14,7 @@ Traditional municipal grievance portals fail on the ground due to a fundamental 
 
 **CivicHelp Jammu** turns grievance management into a closed-loop civic accountability operating system:
 - **Zero-Login Quick Reporting:** In-browser live camera viewfinder with auto-locked GPS — strictly blocking internet/gallery photo spam.
-- **Collective Voice (AI Spatial Clustering):** Automatically merges nearby duplicate reports ($\le 60\text{m}$) into a single high-priority ticket with elevated citizen weight.
+- **Collective Voice (Spatial Incident Clustering):** Automatically merges nearby duplicate reports ($\le 60\text{m}$) into a single high-priority ticket with elevated citizen weight.
 - **Real-Time Officer Sync:** Live background sync alerts field officers instantly with the citizen's photo proof visible directly on dashboard cards.
 - **Two-Way Citizen Verification:** No ticket can permanently close without the reporting citizen's confirmation and written feedback. Unsatisfied citizens can reopen tickets with a single click.
 - **Multi-Lingual Regional Access:** Instant one-click translation into regional languages (**English, हिन्दी, डोगरी, اردو, ਪੰਜਾਬੀ, کٲشُر**).
@@ -45,44 +45,50 @@ Here is a visual walkthrough of the platform across both citizen and municipal o
 ---
 
 ### 4. 📸 Citizen Quick-Report with Live Camera Viewfinder (`/report`)
-*Zero-login 30-second intake. Features auto-locked GPS with ward selector fallback, browser-enforced **Live Camera Only** viewfinder (gallery uploads strictly disabled to prevent recycled spam), and instant AI spatial clustering.*
+*Zero-login 30-second intake. Features auto-locked GPS with ward selector fallback, browser-enforced **Live Camera Only** viewfinder (gallery uploads strictly disabled to prevent recycled spam), and instant spatial clustering.*
 ![Citizen Quick Report](./docs/screenshots/04_citizen_quick_report.png)
 
 ---
 
-### 5. ⚡ Officer Action Console with Citizen Photo Proof (`/officer`)
+### 5. 🤝 Joined Collective Voice & Instant Ticket Tracking
+*Automated spatial duplicate clustering joins multiple citizens reporting within 60 meters into a unified high-priority complaint (e.g. `BH-0304` in Janipur Main with 3 citizens backing it), instantly showing their unique tracking code with one-click navigation to the audit chain.*
+![Joined Collective Voice](./docs/screenshots/05_collective_voice_confirmation.png)
+
+---
+
+### 6. ⚡ Officer Action Console with Citizen Photo Proof (`/officer`)
 *Live officer inbox featuring citizen-submitted live photo proofs on every card, SLA countdown chips, citizen collective voice counts, and dedicated tabs: **Pending**, **Reopened by Citizen 🔄**, **Awaiting Verify**, and **Completed**.*
-![Officer Inbox with Citizen Proof](./docs/screenshots/05_officer_inbox_with_photos.png)
+![Officer Inbox with Citizen Proof](./docs/screenshots/06_officer_inbox_with_photos.png)
 
 ---
 
-### 6. 🛠️ Officer Resolution Console (`/officer/t/[id]`)
+### 7. 🛠️ Officer Resolution Console (`/officer/t/[id]`)
 *Officers accept grievances, initiate field crew dispatch, or declare transparent public delay reasons. Work closure requires uploading an after-repair photo proof.*
-![Officer Resolution Console](./docs/screenshots/06_officer_resolution_console.png)
+![Officer Resolution Console](./docs/screenshots/07_officer_resolution_console.png)
 
 ---
 
-### 7. 🔍 Citizen Track & Feedback Navigation Modal
+### 8. 🔍 Citizen Track & Feedback Navigation Modal
 *One-click popup search accessible from any page via the top navigation bar. Citizens simply enter their unique tracking code (e.g. `BH-0001`) to jump directly to their grievance audit trail and feedback console.*
-![Track and Feedback Modal](./docs/screenshots/07_track_and_feedback_modal.png)
+![Track and Feedback Modal](./docs/screenshots/08_track_and_feedback_modal.png)
 
 ---
 
-### 8. 📊 Public Grievance Tracker & Priority Index (`/t/BH-0001`)
+### 9. 📊 Public Grievance Tracker & Priority Index (`/t/BH-0001`)
 *Public audit trail displaying cryptographic SHA-256 verification, Ward Rank #1 of 8 Active Open Issues, and an objective formula-based Transparent Priority Score (24.6/100) preventing VIP favoritism.*
-![Tracking Header & Priority](./docs/screenshots/08_tracking_page_header_priority.png)
+![Tracking Header & Priority](./docs/screenshots/09_tracking_page_header_priority.png)
 
 ---
 
-### 9. 🔄 Verified Photographic Proof & Citizen Feedback Loop
+### 10. 🔄 Verified Photographic Proof & Citizen Feedback Loop
 *Before vs After visual comparison. The citizen holds the final authority over closure: they can confirm resolution with feedback comments or reject and reopen the complaint.*
-![Citizen Feedback Form](./docs/screenshots/09_citizen_feedback_resolved_form.png)
+![Citizen Feedback Form](./docs/screenshots/10_citizen_feedback_resolved_form.png)
 
 ---
 
-### 10. ⛓️ Immutable SHA-256 Chained Audit Trail
+### 11. ⛓️ Immutable SHA-256 Chained Audit Trail
 *Every milestone (Grievance Reported → Assigned to Officer → Escalation → Repair Completed → Citizen Feedback) is cryptographically chained and publicly viewable.*
-![Audit Trail Timeline](./docs/screenshots/10_audit_trail_timeline.png)
+![Audit Trail Timeline](./docs/screenshots/11_audit_trail_timeline.png)
 
 ---
 
@@ -124,13 +130,39 @@ Open **`http://localhost:3000`** in your browser.
 
 ---
 
-## 🧪 Demo Data & Quick Testing
-To demo the full feedback loop out of the box:
-1. Open **`http://localhost:3000`**
-2. Click **"Track & Feedback"** in the top navbar.
-3. Enter Demo Ticket ID: **`BH-0001`**
-4. Review Before & After repair photos and test the **Citizen Feedback** (Confirm Resolution or Reopen with comments).
-5. Switch to **`http://localhost:3000/officer`** to see the **Reopened by Citizen** tab update live!
+## 🧪 Step-by-Step Live Demo & Testing Guide
+
+Test the complete closed-loop municipal lifecycle across **Citizen Intake $ightarrow$ Officer Resolution $ightarrow$ Citizen Verification**:
+
+### Step 1: 📸 Citizen Quick-Report (`/report`)
+1. Open **`http://localhost:3000/report`** (or click **Report Issue** in top navbar).
+2. Allow browser camera permission. Your GPS coordinates auto-lock instantly (or select Ward/Locality manually, e.g. *Ward 18 - Shastri Nagar*).
+3. The live viewfinder enforces genuine camera capture (file gallery upload is blocked). Click **"Capture Photo"**.
+4. Click any quick-tag (e.g. `+ Deep pothole causing traffic jam`) and click **"Submit Grievance Now"**.
+5. **Instant Result:** You are assigned a unique tracking code (or automatically joined into **Collective Voice** if a duplicate issue exists within 60 meters).
+
+---
+
+### Step 2: ⚡ Officer Action & Resolution (`/officer`)
+1. Open **`http://localhost:3000/officer`** (Officer Console for Rajesh Sharma - Roads & Infrastructure).
+2. Observe your reported issue appearing immediately under the **Pending** tab with citizen photo proof, SLA countdown timer, and Priority Score.
+3. Click on the grievance card or open **`http://localhost:3000/officer/t/1`** to enter the **Resolution Console**.
+4. Test Officer Actions:
+   - Click **"Acknowledge & Dispatch Crew"** to set status to in-progress.
+   - Click **"Capture After-Repair Proof"** to lock the verified completion photo.
+   - Click **"Mark Resolved & Submit to Citizen"** — ticket transitions to *Awaiting Citizen Verification*.
+
+---
+
+### Step 3: 🔄 Citizen Feedback & Closure Verification (`/t/[code]`)
+1. Open **`http://localhost:3000`** and click **"Track & Feedback"** in the top navbar.
+2. Enter ticket code **`BH-0001`** (pre-seeded resolved demo ticket) or your newly generated code.
+3. Compare the verified **Before vs After** repair photos side-by-side.
+4. Test the Citizen Feedback Loop:
+   - **Option A (Confirm Resolution):** Click *"Yes, Issue is Resolved!"*, add an optional thank-you remark, and submit. Status transitions to **Closed (Citizen Confirmed)**.
+   - **Option B (Reopen Grievance):** Click *"No, Problem Still Exists"*, enter a reason (e.g. *"Patch cracked again after morning rain"*), and submit.
+5. Switch back to **`http://localhost:3000/officer`**:
+   - The grievance immediately moves to the dedicated **"Reopened by Citizen 🔄"** tab with your feedback reason appended directly into the SHA-256 audit trail!
 
 ---
 

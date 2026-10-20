@@ -236,7 +236,7 @@ export default function QuickReportPage() {
           <AlertTriangle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
           <div className="space-y-1">
             <h2 className="text-xs font-black text-red-900 uppercase">
-              AI Verification Failed {rejectionError.detected && `(${rejectionError.detected})`}
+              Automated Verification Notice {rejectionError.detected && `(${rejectionError.detected})`}
             </h2>
             <p className="text-xs text-red-700 leading-relaxed font-medium">
               {rejectionError.message}
@@ -417,7 +417,7 @@ export default function QuickReportPage() {
           {submitting ? (
             <>
               <RefreshCw className="w-4 h-4 animate-spin" />
-              Verifying with AI & Dispatching...
+              Validating & Dispatching...
             </>
           ) : (
             <>
