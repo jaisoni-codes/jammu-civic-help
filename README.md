@@ -28,67 +28,67 @@ Here is a visual walkthrough of the platform across both citizen and municipal o
 
 ### 1. 🌐 Public City Trust Portal (`/`)
 *Real-time municipal health dashboard showing overall City Trust Score (67.4/100), total active vs verified closures, and competitive ward-by-ward rankings (e.g. Ward 18 Shastri Nagar as Ward Champion).*
-![City Trust Portal](./docs/screenshots/01_city_trust_portal.png?v=2)
+![City Trust Portal](./docs/screens/01_city_trust_portal.png)
 
 ---
 
 ### 2. 🌍 Regional Linguistic Accessibility
 *One-click multi-language switcher supporting English, Hindi, Dogri, Urdu, Punjabi, and Kashmiri to eliminate language barriers for citizens across Jammu & Kashmir.*
-![Language Selector](./docs/screenshots/02_language_selector.png?v=2)
+![Language Selector](./docs/screens/02_language_selector.png)
 
 ---
 
 ### 3. 🏛️ Full Dogri Real-Time Localization
 *The entire platform dynamically translated into Dogri (पब्लिक वार्ड ट्रस्ट सूचकांक, सिविकहेल्प, रिपोर्ट मुद्दा), ensuring zero linguistic exclusion.*
-![Dogri Localized Portal](./docs/screenshots/03_dogri_localized_portal.png?v=2)
+![Dogri Localized Portal](./docs/screens/03_dogri_localized_portal.png)
 
 ---
 
 ### 4. 📸 Citizen Quick-Report with Live Camera Viewfinder (`/report`)
 *Zero-login 30-second intake. Features auto-locked GPS with ward selector fallback, browser-enforced **Live Camera Only** viewfinder (gallery uploads strictly disabled to prevent recycled spam), and instant spatial clustering.*
-![Citizen Quick Report](./docs/screenshots/04_citizen_quick_report.png?v=2)
+![Citizen Quick Report](./docs/screens/04_citizen_quick_report.png)
 
 ---
 
 ### 5. 🤝 Joined Collective Voice & Instant Ticket Tracking
 *Automated spatial duplicate clustering joins multiple citizens reporting within 60 meters into a unified high-priority complaint (e.g. `BH-0304` in Janipur Main with 3 citizens backing it), instantly showing their unique tracking code with one-click navigation to the audit chain.*
-![Joined Collective Voice](./docs/screenshots/05_collective_voice_confirmation.png?v=2)
+![Joined Collective Voice](./docs/screens/05_collective_voice_confirmation.png)
 
 ---
 
 ### 6. ⚡ Officer Action Console with Citizen Photo Proof (`/officer`)
 *Live officer inbox featuring citizen-submitted live photo proofs on every card, SLA countdown chips, citizen collective voice counts, and dedicated tabs: **Pending**, **Reopened by Citizen 🔄**, **Awaiting Verify**, and **Completed**.*
-![Officer Inbox with Citizen Proof](./docs/screenshots/06_officer_inbox_with_photos.png?v=2)
+![Officer Inbox with Citizen Proof](./docs/screens/06_officer_inbox_with_photos.png)
 
 ---
 
 ### 7. 🛠️ Officer Resolution Console (`/officer/t/[id]`)
 *Officers accept grievances, initiate field crew dispatch, or declare transparent public delay reasons. Work closure requires uploading an after-repair photo proof.*
-![Officer Resolution Console](./docs/screenshots/07_officer_resolution_console.png?v=2)
+![Officer Resolution Console](./docs/screens/07_officer_resolution_console.png)
 
 ---
 
 ### 8. 🔍 Citizen Track & Feedback Navigation Modal
 *One-click popup search accessible from any page via the top navigation bar. Citizens simply enter their unique tracking code (e.g. `BH-0001`) to jump directly to their grievance audit trail and feedback console.*
-![Track and Feedback Modal](./docs/screenshots/08_track_and_feedback_modal.png?v=2)
+![Track and Feedback Modal](./docs/screens/08_track_and_feedback_modal.png)
 
 ---
 
 ### 9. 📊 Public Grievance Tracker & Priority Index (`/t/BH-0001`)
 *Public audit trail displaying cryptographic SHA-256 verification, Ward Rank #1 of 8 Active Open Issues, and an objective formula-based Transparent Priority Score (24.6/100) preventing VIP favoritism.*
-![Tracking Header & Priority](./docs/screenshots/09_tracking_page_header_priority.png?v=2)
+![Tracking Header & Priority](./docs/screens/09_tracking_page_header_priority.png)
 
 ---
 
 ### 10. 🔄 Verified Photographic Proof & Citizen Feedback Loop
 *Before vs After visual comparison. The citizen holds the final authority over closure: they can confirm resolution with feedback comments or reject and reopen the complaint.*
-![Citizen Feedback Form](./docs/screenshots/10_citizen_feedback_resolved_form.png?v=2)
+![Citizen Feedback Form](./docs/screens/10_citizen_feedback_resolved_form.png)
 
 ---
 
 ### 11. ⛓️ Immutable SHA-256 Chained Audit Trail
 *Every milestone (Grievance Reported → Assigned to Officer → Escalation → Repair Completed → Citizen Feedback) is cryptographically chained and publicly viewable.*
-![Audit Trail Timeline](./docs/screenshots/11_audit_trail_timeline.png?v=2)
+![Audit Trail Timeline](./docs/screens/11_audit_trail_timeline.png)
 
 ---
 
