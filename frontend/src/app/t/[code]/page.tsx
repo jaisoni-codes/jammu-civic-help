@@ -5,15 +5,22 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { 
   ArrowLeft, ShieldCheck, CheckCircle2, Clock, 
-  MapPin, Users, Award, AlertCircle, RefreshCw, Lock
+  MapPin, Users, Award, AlertCircle, RefreshCw, Lock,
+  ThumbsUp, RotateCcw
 } from "lucide-react";
 import { fetchTicketPublic } from "@/lib/api";
+
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 export default function TicketPublicPage() {
   const params = useParams();
   const code = (params.code as string).toUpperCase();
   const [ticket, setTicket] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [verifying, setVerifying] = useState(false);
+  const [verifySuccess, setVerifySuccess] = useState<string | null>(null);
+  const [reopenReason, setReopenReason] = useState("");
+  const [showReopenForm, setShowReopenForm] = useState(false);
 
   const loadTicket = async () => {
     try {
@@ -24,6 +31,45 @@ export default function TicketPublicPage() {
       console.error(e);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleVerify = async () => {
+    setVerifying(true);
+    try {
+      const res = await fetch(`${API_BASE}/api/public/tickets/${code}/verify`, { method: "POST" });
+      if (res.ok) {
+        setVerifySuccess("✅ Thank you! Your complaint has been marked as resolved and closed.");
+        loadTicket();
+      } else {
+        setVerifySuccess("Something went wrong. Please try again.");
+      }
+    } catch {
+      setVerifySuccess("Network error. Please try again.");
+    } finally {
+      setVerifying(false);
+    }
+  };
+
+  const handleReopen = async () => {
+    if (!reopenReason.trim()) return;
+    setVerifying(true);
+    try {
+      const res = await fetch(`${API_BASE}/api/public/tickets/${code}/reopen`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reason: reopenReason }),
+      });
+      if (res.ok) {
+        setVerifySuccess("🔄 Your complaint has been reopened. The officer has been notified.");
+        setShowReopenForm(false);
+        setReopenReason("");
+        loadTicket();
+      }
+    } catch {
+      setVerifySuccess("Network error. Please try again.");
+    } finally {
+      setVerifying(false);
     }
   };
 
@@ -160,12 +206,104 @@ export default function TicketPublicPage() {
         </div>
       </div>
 
+      {/* ── CITIZEN FEEDBACK SECTION ── */}
+      {ticket.status !== "verified_closed" && (
+        <div className="bg-white rounded-xl border-2 border-emerald-200 p-6 shadow-sm space-y-4">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center shrink-0">
+              <ThumbsUp className="w-4 h-4 text-white" />
+            </div>
+            <div>
+              <h2 className="text-base font-black text-slate-900">Your Feedback</h2>
+              <p className="text-xs text-slate-500">You have the final say — confirm resolution or raise it again</p>
+            </div>
+          </div>
+
+          {verifySuccess ? (
+            <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-semibold p-4 rounded-xl text-center">
+              {verifySuccess}
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {/* Option 1: Confirm it's done */}
+              <button
+                onClick={handleVerify}
+                disabled={verifying}
+                className="w-full flex items-center gap-3 bg-emerald-50 hover:bg-emerald-100 border-2 border-emerald-300 hover:border-emerald-400 text-emerald-900 font-bold py-4 px-5 rounded-xl transition text-left"
+              >
+                <div className="w-9 h-9 rounded-full bg-emerald-600 flex items-center justify-center shrink-0">
+                  <ThumbsUp className="w-4 h-4 text-white" />
+                </div>
+                <div>
+                  <div className="text-sm font-black">Yes, Issue is Resolved! ✅</div>
+                  <div className="text-xs text-emerald-700 font-medium">The work has been done. Mark this complaint as closed.</div>
+                </div>
+              </button>
+
+              {/* Option 2: Not resolved — reopen */}
+              {!showReopenForm ? (
+                <button
+                  onClick={() => setShowReopenForm(true)}
+                  className="w-full flex items-center gap-3 bg-red-50 hover:bg-red-100 border-2 border-red-200 hover:border-red-400 text-red-900 font-bold py-4 px-5 rounded-xl transition text-left"
+                >
+                  <div className="w-9 h-9 rounded-full bg-red-500 flex items-center justify-center shrink-0">
+                    <RotateCcw className="w-4 h-4 text-white" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-black">No, Problem Still Exists 🔄</div>
+                    <div className="text-xs text-red-700 font-medium">Work is incomplete or unsatisfactory. Raise this complaint again.</div>
+                  </div>
+                </button>
+              ) : (
+                <div className="bg-red-50 border-2 border-red-200 rounded-xl p-4 space-y-3">
+                  <p className="text-xs font-bold text-red-900">Tell us what's still wrong:</p>
+                  <textarea
+                    value={reopenReason}
+                    onChange={(e) => setReopenReason(e.target.value)}
+                    rows={2}
+                    placeholder="e.g. The pothole is partially filled but still dangerous, water is still leaking..."
+                    className="w-full text-xs border border-red-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-red-400 bg-white resize-none"
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleReopen}
+                      disabled={verifying || !reopenReason.trim()}
+                      className="flex-1 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold py-2.5 rounded-lg text-xs flex items-center justify-center gap-2 transition"
+                    >
+                      <RotateCcw className="w-3.5 h-3.5" />
+                      {verifying ? "Submitting..." : "Reopen Complaint"}
+                    </button>
+                    <button
+                      onClick={() => { setShowReopenForm(false); setReopenReason(""); }}
+                      className="px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg text-xs transition"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Verified Closed State */}
+      {ticket.status === "verified_closed" && (
+        <div className="bg-emerald-50 border-2 border-emerald-300 rounded-xl p-5 flex items-center gap-3">
+          <CheckCircle2 className="w-8 h-8 text-emerald-600 shrink-0" />
+          <div>
+            <p className="text-sm font-black text-emerald-900">Complaint Verified & Closed ✓</p>
+            <p className="text-xs text-emerald-700 mt-0.5">This grievance has been confirmed as resolved by the citizen. Thank you for your participation!</p>
+          </div>
+        </div>
+      )}
+
       {/* Activity & Verification Timeline */}
       <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
             <CheckCircle2 className="w-5 h-5 text-emerald-600" />
-            Ticket Activity & Audit Trail (समयरेखा)
+            Ticket Activity &amp; Audit Trail (समयरेखा)
           </h2>
           <span className="text-[11px] font-semibold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full border border-slate-200">
             Immutable SHA-256 Chained

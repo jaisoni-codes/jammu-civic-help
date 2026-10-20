@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from typing import List, Dict, Any, Optional
 from backend.app.db import get_db
@@ -428,3 +429,57 @@ async def submit_quick_report(
         "message": f"Grievance successfully recorded as Ticket {new_ticket.code} in {ward.name}!"
     }
 
+
+class FeedbackRequest(BaseModel):
+    reason: Optional[str] = None
+
+@router.post("/tickets/{code}/verify")
+def citizen_verify_resolved(code: str, db: Session = Depends(get_db)):
+    """Citizen confirms the repair is complete and satisfactory — closes the ticket."""
+    ticket = db.query(Ticket).filter(Ticket.code == code).first()
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    if ticket.status.value not in ("resolved_pending_verification", "in_progress", "assigned", "open"):
+        raise HTTPException(status_code=400, detail=f"Ticket is already {ticket.status.value}")
+
+    ticket.status = TicketStatus.VERIFIED_CLOSED
+    from backend.app import clock as _clock
+    ticket.closed_at = _clock.now()
+
+    append_ticket_event(
+        db,
+        ticket_id=ticket.id,
+        event_type="verified_closed",
+        actor_type="citizen",
+        actor_id="web_citizen",
+        payload={"feedback": "satisfied", "channel": "web_portal"},
+        timestamp=_clock.now()
+    )
+    db.commit()
+    return {"status": "ok", "message": "Thank you! Ticket has been verified and closed."}
+
+
+@router.post("/tickets/{code}/reopen")
+def citizen_reopen_ticket(code: str, req: FeedbackRequest, db: Session = Depends(get_db)):
+    """Citizen reports that the issue is NOT resolved — reopens the ticket."""
+    ticket = db.query(Ticket).filter(Ticket.code == code).first()
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    if ticket.status.value == "verified_closed":
+        raise HTTPException(status_code=400, detail="Ticket is already verified closed")
+
+    ticket.status = TicketStatus.REOPENED
+    ticket.reopen_count = (ticket.reopen_count or 0) + 1
+
+    from backend.app import clock as _clock
+    append_ticket_event(
+        db,
+        ticket_id=ticket.id,
+        event_type="reopened",
+        actor_type="citizen",
+        actor_id="web_citizen",
+        payload={"reason": req.reason or "Not satisfied with resolution", "channel": "web_portal"},
+        timestamp=_clock.now()
+    )
+    db.commit()
+    return {"status": "ok", "message": "Ticket has been reopened. The officer has been notified."}
