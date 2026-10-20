@@ -82,8 +82,9 @@ export default function OfficerInboxPage() {
 
   const [tickets, setTickets]   = useState<any[]>([]);
   const [loading, setLoading]   = useState(false);
-  const [newAlert, setNewAlert] = useState<string | null>(null);
-  const prevCountRef            = useRef<number>(0);
+  const [newAlert, setNewAlert] = useState<{ title: string; subtitle?: string; code?: string } | null>(null);
+  const knownTicketIdsRef       = useRef<Set<number>>(new Set());
+  const isInitializedRef        = useRef<boolean>(false);
 
   // Tab: "pending" | "awaiting" | "completed"
   const [tab, setTab]           = useState<"pending" | "awaiting" | "completed">("pending");
@@ -104,12 +105,12 @@ export default function OfficerInboxPage() {
     }
   }, []);
 
-  // Auto-refresh every 10 seconds when logged in
+  // Auto-refresh every 5 seconds when logged in for fast real-time notifications
   useEffect(() => {
     if (!token) return;
     const interval = setInterval(() => {
       if (tokenRef.current) silentRefresh(tokenRef.current);
-    }, 10000);
+    }, 5000);
     return () => clearInterval(interval);
   }, [token]);
 
@@ -132,7 +133,9 @@ export default function OfficerInboxPage() {
     setLoading(true);
     try {
       const res = await fetchOfficerTickets(authToken);
-      prevCountRef.current = res.length;
+      // Populate known tickets set on initial load so we NEVER alert on pre-existing tickets
+      knownTicketIdsRef.current = new Set(res.map((t: any) => t.id));
+      isInitializedRef.current = true;
       setTickets(res);
     } catch (err) {
       console.error(err);
@@ -141,19 +144,40 @@ export default function OfficerInboxPage() {
     }
   };
 
-  // Silent background refresh — no loading spinner, detects new tickets
+  // Silent background refresh — detects genuine newly submitted or updated complaints
   const silentRefresh = async (authToken: string) => {
     try {
       const res = await fetchOfficerTickets(authToken);
-      const newPending = res.filter((t: any) => ["open","assigned","in_progress","reopened"].includes(t.status));
-      const oldPending = tickets.filter((t: any) => ["open","assigned","in_progress","reopened"].includes(t.status));
-      if (newPending.length > oldPending.length) {
-        const diff = newPending.length - oldPending.length;
-        setNewAlert(`🔔 ${diff} new complaint${diff > 1 ? "s" : ""} just arrived!`);
-        setTimeout(() => setNewAlert(null), 5000);
+      if (!isInitializedRef.current) {
+        knownTicketIdsRef.current = new Set(res.map((t: any) => t.id));
+        isInitializedRef.current = true;
+        setTickets(res);
+        return;
+      }
+
+      // Check for tickets whose IDs were never seen before
+      const brandNewTickets = res.filter((t: any) => !knownTicketIdsRef.current.has(t.id));
+
+      if (brandNewTickets.length > 0) {
+        // Register newly seen tickets so alert does not repeat
+        brandNewTickets.forEach((t: any) => knownTicketIdsRef.current.add(t.id));
+
+        const latest = brandNewTickets[0];
+        const count = brandNewTickets.length;
+        setNewAlert({
+          title: count === 1 ? `New Complaint Filed!` : `${count} New Complaints Filed!`,
+          subtitle: count === 1 ? `${latest.category?.replace(/_/g, " ")} • ${latest.ward}` : `Latest: ${latest.code}`,
+          code: latest.code,
+        });
+
+        // Auto dismiss toast after 7s
+        setTimeout(() => setNewAlert(null), 7000);
+
+        // Switch to pending tab and sort newest to highlight it immediately
         setTab("pending");
         setSortKey("newest");
       }
+
       setTickets(res);
     } catch (err) { /* silent */ }
   };
@@ -241,15 +265,6 @@ export default function OfficerInboxPage() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-6 space-y-4">
-      {/* New Ticket Alert Banner */}
-      {newAlert && (
-        <div className="bg-emerald-600 text-white px-4 py-3 rounded-xl flex items-center gap-2 shadow-lg animate-pulse">
-          <Bell className="w-4 h-4 shrink-0" />
-          <span className="text-sm font-bold">{newAlert}</span>
-          <span className="text-xs opacity-80 ml-1">— Showing newest first</span>
-        </div>
-      )}
-
       {/* Officer Header */}
       <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm flex items-center justify-between">
         <div>
@@ -262,8 +277,8 @@ export default function OfficerInboxPage() {
           <span className="text-xs text-slate-500">{officer.department}</span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[10px] text-slate-400">Auto-refresh: 10s</span>
-          <button onClick={() => loadTickets(token!)} className="p-2 border rounded-lg text-slate-600 hover:bg-slate-50">
+          <span className="text-[10px] text-slate-400">Live Sync: Active</span>
+          <button onClick={() => loadTickets(token!)} className="p-2 border rounded-lg text-slate-600 hover:bg-slate-50" title="Manual refresh">
             <RefreshCw className="w-4 h-4" />
           </button>
           <button onClick={handleLogout} className="text-xs text-red-600 font-semibold px-2 py-1">
@@ -433,6 +448,44 @@ export default function OfficerInboxPage() {
           })
         )}
       </div>
+
+      {/* Toast Notification (Bottom-Right) */}
+      {newAlert && (
+        <aside 
+          aria-live="polite"
+          className="fixed bottom-6 right-6 z-50 max-w-sm w-full bg-slate-900/95 backdrop-blur-md text-white p-4 rounded-2xl shadow-2xl border border-slate-700/80 animate-in slide-in-from-bottom-5 duration-300 flex items-start gap-3"
+        >
+          <div className="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center shrink-0">
+            <Bell className="w-5 h-5 animate-bounce" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-xs font-black tracking-wide text-emerald-400 uppercase">
+                {newAlert.title}
+              </span>
+              <button 
+                onClick={() => setNewAlert(null)}
+                className="text-slate-400 hover:text-white p-0.5 rounded transition"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            {newAlert.code && (
+              <p className="text-sm font-black text-white mt-0.5">
+                {newAlert.code}
+              </p>
+            )}
+            {newAlert.subtitle && (
+              <p className="text-xs text-slate-300 capitalize truncate mt-0.5">
+                {newAlert.subtitle}
+              </p>
+            )}
+            <p className="text-[10px] text-emerald-400/90 font-medium mt-1">
+              ✓ Added to top of Pending inbox
+            </p>
+          </div>
+        </aside>
+      )}
 
       {/* Full Photo Preview Modal */}
       {previewPhoto && (
