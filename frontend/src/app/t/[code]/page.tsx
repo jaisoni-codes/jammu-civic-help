@@ -160,22 +160,62 @@ export default function TicketPublicPage() {
         </div>
       </div>
 
-      {/* Append-Only Audit Timeline */}
+      {/* Activity & Verification Timeline */}
       <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
-        <h2 className="text-base font-bold text-slate-900 mb-4">Immutable Audit Chain (टाइमलाइन)</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+            <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+            Ticket Activity & Audit Trail (समयरेखा)
+          </h2>
+          <span className="text-[11px] font-semibold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full border border-slate-200">
+            Immutable SHA-256 Chained
+          </span>
+        </div>
+
         <div className="space-y-4 border-l-2 border-slate-200 pl-4 ml-2">
-          {ticket.timeline?.map((ev: any) => (
-            <div key={ev.id} className="relative group">
-              <div className="w-3 h-3 bg-emerald-600 rounded-full absolute -left-[23px] top-1.5 border-2 border-white ring-2 ring-emerald-100" />
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold uppercase text-slate-800">{ev.type.replace(/_/g, " ")}</span>
-                <span className="text-[11px] text-slate-400">{ev.created_at ? new Date(ev.created_at).toLocaleString() : ""}</span>
+          {ticket.timeline?.map((ev: any) => {
+            let label = ev.type.replace(/_/g, " ");
+            let description = "";
+
+            if (ev.type === "created") {
+              label = "Grievance Reported";
+              description = "Citizen reported the issue from field";
+            } else if (ev.type === "assigned") {
+              label = "Assigned to Field Officer";
+              description = ev.payload?.officer_name ? `Assigned to ${ev.payload.officer_name}` : "Assigned to department engineer";
+            } else if (ev.type === "cluster_joined") {
+              label = "Collective Voice: Another Citizen Reported This";
+              description = ev.payload?.affected_count ? `Confirmed by another nearby resident (${ev.payload.affected_count} citizens total)` : "Nearby resident reinforced this complaint";
+            } else if (ev.type === "in_progress") {
+              label = "Work In Progress";
+              description = "Officer accepted and dispatched maintenance team";
+            } else if (ev.type === "resolved_pending_verification") {
+              label = "Repair Completed (Pending Verification)";
+              description = "Officer submitted geotagged after-photo proof";
+            } else if (ev.type === "verified_closed") {
+              label = "Citizen Verified & Closed";
+              description = "Citizen confirmed ground repair satisfaction";
+            } else if (ev.type === "reopened") {
+              label = "Reopened by Citizen";
+              description = "Citizen flagged work as incomplete or unsatisfactory";
+            }
+
+            return (
+              <div key={ev.id} className="relative group">
+                <div className="w-3.5 h-3.5 bg-emerald-600 rounded-full absolute -left-[23px] top-1 border-2 border-white ring-2 ring-emerald-100" />
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                  <span className="text-xs font-bold text-slate-900">{label}</span>
+                  <span className="text-[11px] text-slate-400">{ev.created_at ? new Date(ev.created_at).toLocaleString() : ""}</span>
+                </div>
+                {description && (
+                  <p className="text-xs text-slate-600 mt-0.5">{description}</p>
+                )}
+                <p className="text-[11px] text-slate-400 mt-0.5">
+                  Action logged by: <span className="font-medium text-slate-600 capitalize">{ev.actor_type}</span>
+                </p>
               </div>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Actor: <span className="font-semibold text-slate-700 capitalize">{ev.actor_type}</span>
-              </p>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>
