@@ -24,6 +24,7 @@ export default function OfficerTicketActionPage() {
   const [lng, setLng] = useState<number | null>(null);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [resolving, setResolving] = useState(false);
+  const [accepting, setAccepting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
@@ -76,16 +77,24 @@ export default function OfficerTicketActionPage() {
 
   const handleAccept = async () => {
     if (!token) return;
+    setAccepting(true);
+    setErrorMsg(null);
     try {
       const res = await fetch(`${API_BASE}/api/officer/tickets/${ticketId}/accept`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       });
       if (res.ok) {
+        setSuccessMsg("Work accepted and assigned! Status updated to In Progress.");
         loadDetail(token);
+      } else {
+        const data = await res.json().catch(() => ({}));
+        setErrorMsg(data.detail || "Failed to accept ticket");
       }
-    } catch (e) {
-      console.error(e);
+    } catch (e: any) {
+      setErrorMsg(e.message || "Network error while accepting work");
+    } finally {
+      setAccepting(false);
     }
   };
 
@@ -172,10 +181,15 @@ export default function OfficerTicketActionPage() {
           {ticket.reports?.[0]?.text || "Civic report received"}
         </p>
 
-        {ticket.status === "assigned" && (
+        {(ticket.status === "assigned" || ticket.status === "open") && (
           <div className="pt-2 flex gap-3">
-            <button onClick={handleAccept} className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold p-2.5 rounded-lg text-xs shadow">
-              Accept & Start Work
+            <button 
+              onClick={handleAccept} 
+              disabled={accepting}
+              className="flex-1 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white font-bold p-2.5 rounded-lg text-xs shadow flex items-center justify-center gap-2 transition"
+            >
+              {accepting ? <RefreshCw className="w-4 h-4 animate-spin" /> : null}
+              {accepting ? "Starting Work..." : "Accept & Start Work"}
             </button>
             <button onClick={() => setShowBlock(true)} className="px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg text-xs">
               Block / Delay Reason

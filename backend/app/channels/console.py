@@ -12,7 +12,10 @@ class ConsoleAdapter(ChannelAdapter):
             "text": text,
         }
         outbox_messages.append(msg)
-        print(f"[CONSOLE OUT -> {recipient_id}] {text}")
+        try:
+            print(f"[CONSOLE OUT -> {recipient_id}] {text}")
+        except UnicodeEncodeError:
+            print(f"[CONSOLE OUT -> {recipient_id}] {text.encode('ascii', errors='replace').decode('ascii')}")
         return True
 
     def send_interactive_buttons(
@@ -31,7 +34,10 @@ class ConsoleAdapter(ChannelAdapter):
         }
         outbox_messages.append(msg)
         btn_labels = " | ".join([f"[{b['title']}]" for b in buttons])
-        print(f"[CONSOLE OUT -> {recipient_id}] {text}\n  Options: {btn_labels}")
+        try:
+            print(f"[CONSOLE OUT -> {recipient_id}] {text}\n  Options: {btn_labels}")
+        except UnicodeEncodeError:
+            print(f"[CONSOLE OUT -> {recipient_id}] {text.encode('ascii', errors='replace').decode('ascii')}\n  Options: {btn_labels}")
         return True
 
     def send_media(
@@ -47,7 +53,10 @@ class ConsoleAdapter(ChannelAdapter):
             "caption": caption
         }
         outbox_messages.append(msg)
-        print(f"[CONSOLE OUT -> {recipient_id}] [MEDIA: {media_url}] {caption or ''}")
+        try:
+            print(f"[CONSOLE OUT -> {recipient_id}] [MEDIA: {media_url}] {caption or ''}")
+        except UnicodeEncodeError:
+            print(f"[CONSOLE OUT -> {recipient_id}] [MEDIA: {media_url}] {(caption or '').encode('ascii', errors='replace').decode('ascii')}")
         return True
 
 def get_outbox(drain: bool = False) -> List[Dict[str, Any]]:
