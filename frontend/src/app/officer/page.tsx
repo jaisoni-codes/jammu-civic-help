@@ -82,7 +82,9 @@ export default function OfficerInboxPage() {
 
   const [tickets, setTickets]   = useState<any[]>([]);
   const [loading, setLoading]   = useState(false);
-  const [newAlert, setNewAlert] = useState<{ title: string; subtitle?: string; code?: string } | null>(null);
+  const [newAlert, setNewAlert] = useState<{ title: string; subtitle?: string; code?: string; type?: 'new' | 'reopened'; footer?: string } | null>(null);
+  const alertTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const knownStatusMapRef = useRef<Map<number, string>>(new Map());
   const knownTicketIdsRef       = useRef<Set<number>>(new Set());
   const isInitializedRef        = useRef<boolean>(false);
 
@@ -110,7 +112,7 @@ export default function OfficerInboxPage() {
     if (!token) return;
     const interval = setInterval(() => {
       if (tokenRef.current) silentRefresh(tokenRef.current);
-    }, 5000);
+    }, 2000);
     return () => clearInterval(interval);
   }, [token]);
 
@@ -135,6 +137,9 @@ export default function OfficerInboxPage() {
       const res = await fetchOfficerTickets(authToken);
       // Populate known tickets set on initial load so we NEVER alert on pre-existing tickets
       knownTicketIdsRef.current = new Set(res.map((t: any) => t.id));
+      const sMap = new Map<number, string>();
+      res.forEach((t: any) => sMap.set(t.id, t.status));
+      knownStatusMapRef.current = sMap;
       isInitializedRef.current = true;
       setTickets(res);
     } catch (err) {
@@ -144,36 +149,60 @@ export default function OfficerInboxPage() {
     }
   };
 
-  // Silent background refresh — detects genuine newly submitted or updated complaints
+  // Silent background refresh — detects genuine newly submitted or citizen-reopened complaints
   const silentRefresh = async (authToken: string) => {
     try {
       const res = await fetchOfficerTickets(authToken);
       if (!isInitializedRef.current) {
         knownTicketIdsRef.current = new Set(res.map((t: any) => t.id));
+        const sMap = new Map<number, string>();
+        res.forEach((t: any) => sMap.set(t.id, t.status));
+        knownStatusMapRef.current = sMap;
         isInitializedRef.current = true;
         setTickets(res);
         return;
       }
 
-      // Check for tickets whose IDs were never seen before
+      // 1. Check for tickets whose IDs were never seen before
       const brandNewTickets = res.filter((t: any) => !knownTicketIdsRef.current.has(t.id));
 
-      if (brandNewTickets.length > 0) {
-        // Register newly seen tickets so alert does not repeat
-        brandNewTickets.forEach((t: any) => knownTicketIdsRef.current.add(t.id));
+      // 2. Check for tickets that were just reopened by a citizen
+      const newlyReopened = res.filter((t: any) => {
+        const prevStatus = knownStatusMapRef.current.get(t.id);
+        return t.status === "reopened" && prevStatus && prevStatus !== "reopened";
+      });
 
+      // Update current status tracking map
+      res.forEach((t: any) => {
+        knownTicketIdsRef.current.add(t.id);
+        knownStatusMapRef.current.set(t.id, t.status);
+      });
+
+      if (newlyReopened.length > 0) {
+        const latest = newlyReopened[0];
+        if (alertTimerRef.current) clearTimeout(alertTimerRef.current);
+        setNewAlert({
+          title: "Citizen Reopened Ticket!",
+          subtitle: `${latest.category?.replace(/_/g, " ")} • ${latest.ward}`,
+          code: latest.code,
+          type: "reopened",
+          footer: "Action Required: Moved to Reopened by Citizen tab",
+        });
+        alertTimerRef.current = setTimeout(() => setNewAlert(null), 6000);
+        setTab("reopened");
+        setSortKey("newest");
+      } else if (brandNewTickets.length > 0) {
         const latest = brandNewTickets[0];
         const count = brandNewTickets.length;
+        if (alertTimerRef.current) clearTimeout(alertTimerRef.current);
         setNewAlert({
-          title: count === 1 ? `New Complaint Filed!` : `${count} New Complaints Filed!`,
+          title: count === 1 ? "New Complaint Filed!" : `${count} New Complaints Filed!`,
           subtitle: count === 1 ? `${latest.category?.replace(/_/g, " ")} • ${latest.ward}` : `Latest: ${latest.code}`,
           code: latest.code,
+          type: "new",
+          footer: "✓ Added to top of Pending inbox",
         });
-
-        // Auto dismiss toast after 7s
-        setTimeout(() => setNewAlert(null), 7000);
-
-        // Switch to pending tab and sort newest to highlight it immediately
+        alertTimerRef.current = setTimeout(() => setNewAlert(null), 6000);
         setTab("pending");
         setSortKey("newest");
       }
@@ -456,22 +485,39 @@ export default function OfficerInboxPage() {
         )}
       </div>
 
-      {/* Toast Notification (Bottom-Right) */}
+      {/* Toast Notification (Bottom-Right) — stays visible for 6 seconds */}
       {newAlert && (
         <aside 
           aria-live="polite"
-          className="fixed bottom-6 right-6 z-50 max-w-sm w-full bg-slate-900/95 backdrop-blur-md text-white p-4 rounded-2xl shadow-2xl border border-slate-700/80 animate-in slide-in-from-bottom-5 duration-300 flex items-start gap-3"
+          className={`fixed bottom-6 right-6 z-50 max-w-sm w-full p-4 rounded-2xl shadow-2xl border backdrop-blur-md animate-in slide-in-from-bottom-5 duration-300 flex items-start gap-3 ${
+            newAlert.type === "reopened"
+              ? "bg-slate-950 text-white border-red-500/50 shadow-red-950/40"
+              : "bg-slate-950 text-white border-emerald-500/40 shadow-emerald-950/30"
+          }`}
         >
-          <div className="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center shrink-0">
-            <Bell className="w-5 h-5 animate-bounce" />
+          <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border ${
+            newAlert.type === "reopened"
+              ? "bg-red-500/20 text-red-400 border-red-500/30"
+              : "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
+          }`}>
+            {newAlert.type === "reopened" ? (
+              <RotateCcw className="w-5 h-5 animate-spin" style={{ animationDuration: '3s' }} />
+            ) : (
+              <Bell className="w-5 h-5 animate-bounce" />
+            )}
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between gap-2">
-              <span className="text-xs font-black tracking-wide text-emerald-400 uppercase">
+              <span className={`text-xs font-black tracking-wide uppercase ${
+                newAlert.type === "reopened" ? "text-red-400" : "text-emerald-400"
+              }`}>
                 {newAlert.title}
               </span>
               <button 
-                onClick={() => setNewAlert(null)}
+                onClick={() => {
+                  if (alertTimerRef.current) clearTimeout(alertTimerRef.current);
+                  setNewAlert(null);
+                }}
                 className="text-slate-400 hover:text-white p-0.5 rounded transition"
               >
                 <X className="w-4 h-4" />
@@ -487,8 +533,10 @@ export default function OfficerInboxPage() {
                 {newAlert.subtitle}
               </p>
             )}
-            <p className="text-[10px] text-emerald-400/90 font-medium mt-1">
-              ✓ Added to top of Pending inbox
+            <p className={`text-[10px] font-medium mt-1 ${
+              newAlert.type === "reopened" ? "text-red-300" : "text-emerald-300"
+            }`}>
+              {newAlert.footer || "✓ Live system sync"}
             </p>
           </div>
         </aside>
