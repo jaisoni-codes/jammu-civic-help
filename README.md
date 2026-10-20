@@ -22,30 +22,67 @@ Traditional municipal grievance portals fail on the ground due to a fundamental 
 
 ---
 
-## 🌟 Key Innovations & Features
+## 📸 Visual Tour & Walkthrough
 
-### 1. 📸 Anti-Fraud Ground Intake
-- **Viewfinder-Only Camera:** Directly taps into the device camera stream (`navigator.mediaDevices`), preventing stock images or fake photos from being selected.
-- **Auto-Locked GPS & Fallback:** Pinpoints high-accuracy coordinates with seamless fallback across all 75 municipal wards of Jammu.
-- **Offline-to-Online QR Campaign:** Designed for physical city-wide QR posters at bus stops, markets, and ward offices.
+Here is a visual walkthrough of the platform across both citizen and municipal officer workflows:
 
-### 2. ⚡ Real-Time Officer Action Console
-- **Direct Citizen Photo Proof:** Each complaint card displays the complainant's photo thumbnail with a full-resolution inspection modal.
-- **Instant Toast Notification:** When a citizen submits a grievance in one tab, the officer console pops up a real-time toast alert at the bottom-right and prioritizes the ticket to the top.
-- **Documented After-Repair Evidence:** Officers upload an after-repair photo proof (camera or gallery) before marking work complete.
-- **Public Delay Reasons:** If materials or inter-departmental clearances cause delays, officers openly declare reasons (visible to citizens).
+### 1. 🌐 Public City Trust Portal (`/`)
+*Real-time municipal health dashboard showing overall City Trust Score (67.4/100), total active vs verified closures, and competitive ward-by-ward rankings (e.g. Ward 18 Shastri Nagar as Ward Champion).*
+![City Trust Portal](./docs/screenshots/01_city_trust_portal.png)
 
-### 3. 🔄 Public Citizen Tracker & Feedback Loop
-- **Track & Feedback Navigation Tool:** One-click navbar button with popup search to quickly look up any complaint ID (e.g. `BH-0001`).
-- **Before vs After Visual Proof:** Citizens compare the original grievance photo side-by-side with the officer's field repair proof.
-- **Citizen Final Say:**
-  - **Yes, Issue is Resolved! ✅:** Closes the ticket permanently with citizen comments and feedback.
-  - **No, Problem Still Exists 🔄:** Opens an inline description form to explain what is still wrong and reopens the complaint immediately for the officer.
-- **SHA-256 Chained Audit Timeline:** Every milestone (created, assigned, clustered, resolved, reopened) is cryptographically logged.
+---
 
-### 4. 🌐 Radical Transparency & City Trust Dashboard
-- **City Trust Dashboard:** Real-time civic health score, verified resolution percentages, and ward leaderboard across all 75 wards of Jammu.
-- **Public Accountability:** Ward rankings based on response time, closure rate, reopen rate, citizen satisfaction, and proactive broadcasts.
+### 2. 🌍 Regional Linguistic Accessibility
+*One-click multi-language switcher supporting English, Hindi, Dogri, Urdu, Punjabi, and Kashmiri to eliminate language barriers for citizens across Jammu & Kashmir.*
+![Language Selector](./docs/screenshots/02_language_selector.png)
+
+---
+
+### 3. 🏛️ Full Dogri Real-Time Localization
+*The entire platform dynamically translated into Dogri (पब्लिक वार्ड ट्रस्ट सूचकांक, सिविकहेल्प, रिपोर्ट मुद्दा), ensuring zero linguistic exclusion.*
+![Dogri Localized Portal](./docs/screenshots/03_dogri_localized_portal.png)
+
+---
+
+### 4. 📸 Citizen Quick-Report with Live Camera Viewfinder (`/report`)
+*Zero-login 30-second intake. Features auto-locked GPS with ward selector fallback, browser-enforced **Live Camera Only** viewfinder (gallery uploads strictly disabled to prevent recycled spam), and instant AI spatial clustering.*
+![Citizen Quick Report](./docs/screenshots/04_citizen_quick_report.png)
+
+---
+
+### 5. ⚡ Officer Action Console with Citizen Photo Proof (`/officer`)
+*Live officer inbox featuring citizen-submitted live photo proofs on every card, SLA countdown chips, citizen collective voice counts, and dedicated tabs: **Pending**, **Reopened by Citizen 🔄**, **Awaiting Verify**, and **Completed**.*
+![Officer Inbox with Citizen Proof](./docs/screenshots/05_officer_inbox_with_photos.png)
+
+---
+
+### 6. 🛠️ Officer Resolution Console (`/officer/t/[id]`)
+*Officers accept grievances, initiate field crew dispatch, or declare transparent public delay reasons. Work closure requires uploading an after-repair photo proof.*
+![Officer Resolution Console](./docs/screenshots/06_officer_resolution_console.png)
+
+---
+
+### 7. 🔍 Citizen Track & Feedback Navigation Modal
+*One-click popup search accessible from any page via the top navigation bar. Citizens simply enter their unique tracking code (e.g. `BH-0001`) to jump directly to their grievance audit trail and feedback console.*
+![Track and Feedback Modal](./docs/screenshots/07_track_and_feedback_modal.png)
+
+---
+
+### 8. 📊 Public Grievance Tracker & Priority Index (`/t/BH-0001`)
+*Public audit trail displaying cryptographic SHA-256 verification, Ward Rank #1 of 8 Active Open Issues, and an objective formula-based Transparent Priority Score (24.6/100) preventing VIP favoritism.*
+![Tracking Header & Priority](./docs/screenshots/08_tracking_page_header_priority.png)
+
+---
+
+### 9. 🔄 Verified Photographic Proof & Citizen Feedback Loop
+*Before vs After visual comparison. The citizen holds the final authority over closure: they can confirm resolution with feedback comments or reject and reopen the complaint.*
+![Citizen Feedback Form](./docs/screenshots/09_citizen_feedback_resolved_form.png)
+
+---
+
+### 10. ⛓️ Immutable SHA-256 Chained Audit Trail
+*Every milestone (Grievance Reported → Assigned to Officer → Escalation → Repair Completed → Citizen Feedback) is cryptographically chained and publicly viewable.*
+![Audit Trail Timeline](./docs/screenshots/10_audit_trail_timeline.png)
 
 ---
 
@@ -56,7 +93,7 @@ Traditional municipal grievance portals fail on the ground due to a fundamental 
 | `/` | **Public Trust Portal** | 75 Wards civic leaderboard, verified metrics, regional language switcher. |
 | `/report` | **Citizen Quick-Report** | Zero-login 30s reporting via live camera stream + GPS auto-lock. |
 | `/t/[code]` | **Citizen Tracking & Feedback** | Before/After visual comparison, audit trail, and citizen feedback (Confirm / Reopen). |
-| `/officer` | **Officer Action Console** | Priority queue, real-time toast alerts, citizen photo thumbnails. |
+| `/officer` | **Officer Action Console** | Priority queue, real-time toast alerts, citizen photo thumbnails, Reopened tab. |
 | `/officer/t/[id]` | **Resolution Console** | Upload after-repair proof, declare public delays, submit resolution. |
 | `/admin` | **Commissioner HQ** | Department workloads, SLA breach escalation monitors, city-wide audit events. |
 | `/ward/[id]` | **Ward Deep Dive** | 6-component municipal trust score breakdown and historical trends. |
@@ -93,6 +130,7 @@ To demo the full feedback loop out of the box:
 2. Click **"Track & Feedback"** in the top navbar.
 3. Enter Demo Ticket ID: **`BH-0001`**
 4. Review Before & After repair photos and test the **Citizen Feedback** (Confirm Resolution or Reopen with comments).
+5. Switch to **`http://localhost:3000/officer`** to see the **Reopened by Citizen** tab update live!
 
 ---
 
