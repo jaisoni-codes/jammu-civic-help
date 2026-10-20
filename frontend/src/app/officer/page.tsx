@@ -27,7 +27,12 @@ function sortTickets(tickets: any[], sortKey: SortKey) {
     case "priority":
       return arr.sort((a, b) => (b.priority_score || 0) - (a.priority_score || 0));
     case "newest":
-      return arr.sort((a, b) => (b.id || 0) - (a.id || 0));
+      return arr.sort((a, b) => {
+        const timeA = new Date(a.updated_at || a.created_at || 0).getTime();
+        const timeB = new Date(b.updated_at || b.created_at || 0).getTime();
+        if (timeB !== timeA) return timeB - timeA;
+        return (b.id || 0) - (a.id || 0);
+      });
     case "sla":
       // sort ascending — smallest (most urgent) first; null last
       return arr.sort((a, b) => {

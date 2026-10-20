@@ -58,6 +58,16 @@ def list_officer_tickets(
             elif total_sla > 0 and (left_seconds / total_sla) < 0.30:
                 sla_status = "amber"  # approaching breach
 
+        # Find latest activity / report timestamp so newly updated tickets sort to the top
+        latest_report_time = None
+        if t.reports:
+            latest_report_time = max(
+                (r.created_at for r in t.reports if r.created_at is not None),
+                default=t.created_at
+            )
+        else:
+            latest_report_time = t.created_at
+
         result.append({
             "id": t.id,
             "code": t.code,
@@ -77,7 +87,8 @@ def list_officer_tickets(
             "sla_hours_left": sla_hours_left,
             "sla_status": sla_status,
             "escalation_level": t.escalation_level,
-            "created_at": t.created_at.isoformat() if t.created_at else None
+            "created_at": t.created_at.isoformat() if t.created_at else None,
+            "updated_at": latest_report_time.isoformat() if latest_report_time else (t.created_at.isoformat() if t.created_at else None)
         })
 
     return result

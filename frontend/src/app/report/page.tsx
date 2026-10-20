@@ -271,7 +271,9 @@ export default function QuickReportPage() {
           <div className="mt-1.5 flex items-center gap-1.5">
             <span className="text-[10px] text-slate-400">Or pick ward:</span>
             <select
+              defaultValue=""
               onChange={(e) => {
+                if (e.target.value === "") return;
                 const idx = Number(e.target.value);
                 const loc = JAMMU_LOCALITIES[idx];
                 setCoords({ lat: loc.lat, lng: loc.lng });
@@ -279,6 +281,7 @@ export default function QuickReportPage() {
               }}
               className="text-[10px] bg-slate-100 border border-slate-200 rounded px-1.5 py-0.5 font-medium text-slate-700 outline-none flex-1"
             >
+              <option value="" disabled>-- Select Ward / Locality --</option>
               {JAMMU_LOCALITIES.map((l, i) => (
                 <option key={l.name} value={i}>{l.name}</option>
               ))}
