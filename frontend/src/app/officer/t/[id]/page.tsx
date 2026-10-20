@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { 
-  ArrowLeft, Camera, MapPin, CheckCircle2, 
-  AlertTriangle, Clock, RefreshCw, XCircle 
+  ArrowLeft, Camera, CheckCircle2, 
+  AlertTriangle, RefreshCw, XCircle 
 } from "lucide-react";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -23,7 +23,6 @@ export default function OfficerTicketActionPage() {
   const [lat, setLat] = useState<number | null>(null);
   const [lng, setLng] = useState<number | null>(null);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
-  const [mismatchReason, setMismatchReason] = useState("");
   const [resolving, setResolving] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
@@ -123,7 +122,6 @@ export default function OfficerTicketActionPage() {
     formData.append("photo", photoFile);
     formData.append("lat", (lat || ticket.lat).toString());
     formData.append("lng", (lng || ticket.lng).toString());
-    if (mismatchReason) formData.append("mismatch_reason", mismatchReason);
 
     try {
       const res = await fetch(`${API_BASE}/api/officer/tickets/${ticketId}/resolve`, {
@@ -236,39 +234,13 @@ export default function OfficerTicketActionPage() {
           <form onSubmit={handleResolve} className="space-y-4">
             <div>
               <label className="text-xs font-semibold text-slate-700 block mb-1">
-                Capture After-Repair Photo (Camera required)
+                Upload After-Repair Photo (Camera or Gallery)
               </label>
               <input 
                 type="file" 
-                accept="image/*" 
-                capture="environment"
+                accept="image/*"
                 onChange={(e) => setPhotoFile(e.target.files?.[0] || null)}
                 className="w-full text-xs border rounded-lg p-2 bg-slate-50 file:mr-3 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700"
-              />
-            </div>
-
-            <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 text-xs space-y-1">
-              <div className="flex items-center gap-1.5 font-bold text-slate-700">
-                <MapPin className="w-4 h-4 text-emerald-600" /> Field Geolocation Verification
-              </div>
-              <p className="text-slate-500">
-                Current GPS: {lat ? `${lat.toFixed(4)}, ${lng?.toFixed(4)}` : "Fetching GPS..."}
-              </p>
-              <p className="text-slate-400 text-[11px]">
-                Must be within 75m of ticket location ({ticket.lat?.toFixed(4)}, {ticket.lng?.toFixed(4)})
-              </p>
-            </div>
-
-            <div>
-              <label className="text-xs font-semibold text-slate-700 block mb-1">
-                Location Mismatch Reason (Only if &gt; 75m away from ticket)
-              </label>
-              <input 
-                type="text" 
-                value={mismatchReason} 
-                onChange={(e) => setMismatchReason(e.target.value)}
-                placeholder="e.g. Work carried out across 100m street stretch"
-                className="w-full text-xs border rounded-lg p-2 outline-none focus:ring-1 focus:ring-emerald-500"
               />
             </div>
 
