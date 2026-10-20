@@ -228,14 +228,6 @@ export default function QuickReportPage() {
             </p>
           </div>
         </div>
-
-        {/* AI Guard Banner */}
-        <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-xl flex items-start gap-2 text-xs text-blue-900">
-          <ShieldCheck className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
-          <p className="leading-snug">
-            <b>Live Camera Mandatory:</b> File gallery uploads are disabled. Live camera capture ensures 100% genuine on-site evidence.
-          </p>
-        </div>
       </div>
 
       {/* Rejection Alert */}
