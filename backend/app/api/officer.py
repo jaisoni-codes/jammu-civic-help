@@ -60,11 +60,17 @@ def list_officer_tickets(
 
         # Find latest activity / report timestamp so newly updated tickets sort to the top
         latest_report_time = None
+        photo_url = None
         if t.reports:
             latest_report_time = max(
                 (r.created_at for r in t.reports if r.created_at is not None),
                 default=t.created_at
             )
+            # Find photo from reports (prefer the latest report that has media_url)
+            for r in reversed(t.reports):
+                if r.media_url:
+                    photo_url = r.media_url
+                    break
         else:
             latest_report_time = t.created_at
 
@@ -83,6 +89,7 @@ def list_officer_tickets(
             "affected_count": t.affected_count,
             "priority_score": t.priority_score,
             "priority_reason": t.priority_reason,
+            "photo_url": photo_url,
             "sla_due_at": t.sla_due_at.isoformat() if t.sla_due_at else None,
             "sla_hours_left": sla_hours_left,
             "sla_status": sla_status,

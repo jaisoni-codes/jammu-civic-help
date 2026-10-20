@@ -5,7 +5,7 @@ import Link from "next/link";
 import { 
   UserCheck, RefreshCw, ArrowRight,
   Clock, CheckCircle, AlertTriangle,
-  ArrowDownUp, CalendarClock, Flame, TrendingUp, Bell
+  ArrowDownUp, CalendarClock, Flame, TrendingUp, Bell, Image as ImageIcon, Eye, X
 } from "lucide-react";
 import { officerLogin, fetchOfficerTickets } from "@/lib/api";
 
@@ -65,6 +65,14 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
+function getMediaUrl(path: string | null | undefined): string | null {
+  if (!path) return null;
+  if (path.startsWith("http://") || path.startsWith("https://")) return path;
+  return `${API_BASE}${path.startsWith("/") ? "" : "/"}${path}`;
+}
+
 export default function OfficerInboxPage() {
   const [token, setToken]       = useState<string | null>(null);
   const [officer, setOfficer]   = useState<any>(null);
@@ -80,6 +88,7 @@ export default function OfficerInboxPage() {
   // Tab: "pending" | "awaiting" | "completed"
   const [tab, setTab]           = useState<"pending" | "awaiting" | "completed">("pending");
   const [sortKey, setSortKey]   = useState<SortKey>("newest");
+  const [previewPhoto, setPreviewPhoto] = useState<string | null>(null);
 
   // Keep token in a ref for the interval callback
   const tokenRef = useRef<string | null>(null);
@@ -336,32 +345,67 @@ export default function OfficerInboxPage() {
               t.sla_status === "amber" ? "bg-amber-100 text-amber-800 border-amber-300" :
               "bg-emerald-100 text-emerald-800 border-emerald-300";
 
+            const fullPhotoUrl = getMediaUrl(t.photo_url);
+
             return (
               <div key={t.id} className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm hover:border-slate-300 transition">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-black text-slate-900">{t.code}</span>
-                      <StatusBadge status={t.status} />
-                      {t.sla_hours_left != null && (
-                        <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full border ${slaColor}`}>
-                          {t.sla_hours_left > 0 ? `${t.sla_hours_left}h left` : `${Math.abs(t.sla_hours_left)}h overdue`}
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-start gap-3 min-w-0">
+                    {/* Citizen Photo Thumbnail */}
+                    {fullPhotoUrl ? (
+                      <div 
+                        onClick={() => setPreviewPhoto(fullPhotoUrl)}
+                        className="relative w-16 h-16 sm:w-20 sm:h-20 shrink-0 rounded-lg overflow-hidden border border-slate-200 cursor-pointer group bg-slate-100 shadow-inner"
+                        title="Click to view full photo proof"
+                      >
+                        <img 
+                          src={fullPhotoUrl} 
+                          alt="Citizen Proof" 
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                        />
+                        <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <Eye className="w-5 h-5 text-white drop-shadow" />
+                        </div>
+                        <span className="absolute bottom-0 inset-x-0 bg-black/60 text-[9px] text-white text-center py-0.5 font-bold tracking-tight">
+                          PROOF
                         </span>
+                      </div>
+                    ) : (
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 shrink-0 rounded-lg border border-dashed border-slate-200 bg-slate-50 flex flex-col items-center justify-center text-slate-300">
+                        <ImageIcon className="w-6 h-6 mb-0.5 opacity-60" />
+                        <span className="text-[9px] font-semibold text-slate-400">No Photo</span>
+                      </div>
+                    )}
+
+                    <div className="space-y-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-black text-slate-900">{t.code}</span>
+                        <StatusBadge status={t.status} />
+                        {t.sla_hours_left != null && (
+                          <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full border ${slaColor}`}>
+                            {t.sla_hours_left > 0 ? `${t.sla_hours_left}h left` : `${Math.abs(t.sla_hours_left)}h overdue`}
+                          </span>
+                        )}
+                        {t.escalation_level > 0 && (
+                          <span className="bg-red-600 text-white text-[10px] font-black px-1.5 py-0.5 rounded">
+                            L{t.escalation_level} ESCALATED
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-slate-600 font-medium capitalize truncate">
+                        {t.category?.replace(/_/g, " ")} · {t.ward}
+                      </p>
+                      {t.address && (
+                        <p className="text-[11px] text-slate-500 line-clamp-1 italic">
+                          📍 {t.address}
+                        </p>
                       )}
-                      {t.escalation_level > 0 && (
-                        <span className="bg-red-600 text-white text-[10px] font-black px-1.5 py-0.5 rounded">
-                          L{t.escalation_level} ESCALATED
+                      {t.affected_count > 1 && (
+                        <span className="text-[10px] text-indigo-600 font-semibold block">
+                          👥 {t.affected_count} citizens affected
                         </span>
                       )}
                     </div>
-                    <span className="text-xs text-slate-600 font-medium capitalize">
-                      {t.category?.replace(/_/g, " ")} · {t.ward}
-                    </span>
-                    {t.affected_count > 1 && (
-                      <span className="text-[10px] text-indigo-600 font-semibold">
-                        👥 {t.affected_count} citizens affected
-                      </span>
-                    )}
                   </div>
 
                   <div className="text-right shrink-0">
@@ -389,6 +433,36 @@ export default function OfficerInboxPage() {
           })
         )}
       </div>
+
+      {/* Full Photo Preview Modal */}
+      {previewPhoto && (
+        <div 
+          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-150"
+          onClick={() => setPreviewPhoto(null)}
+        >
+          <div 
+            className="relative max-w-2xl w-full bg-slate-900 rounded-2xl overflow-hidden shadow-2xl border border-slate-700 p-2"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-3 py-2 text-white border-b border-slate-800">
+              <span className="text-xs font-bold text-slate-200">📸 Citizen Grievance Photo Proof</span>
+              <button 
+                onClick={() => setPreviewPhoto(null)} 
+                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-2 flex items-center justify-center max-h-[75vh]">
+              <img 
+                src={previewPhoto} 
+                alt="Citizen Grievance Proof Full" 
+                className="max-h-[70vh] w-auto max-w-full rounded-lg object-contain bg-black/40"
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
