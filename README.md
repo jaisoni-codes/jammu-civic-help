@@ -1,72 +1,101 @@
-# Bharosa Jammu (भरोसा जम्मू)
-> **A WhatsApp-first Civic Trust Engine for Jammu Smart City**  
-> *Category 05: Welfare for All | Problem 3: Strengthen Citizen-Municipality Trust*
+# CivicHelp Jammu (सिविक हेल्प जम्मू)
+> **A Verifiable Civic Trust & Accountability Engine for Jammu Municipal Corporation (JMC)**  
+> *Category 05: Welfare for All | Problem Statement: Strengthen Citizen-Municipality Trust through Communication, Responsive Services, Participation, and Feedback Mechanisms.*
 
 ---
 
 ## 🏛️ Executive Summary
-Complaint intake is a commodity. The real challenge in municipal governance is that citizens rarely know if they were heard, priority feels arbitrary, and closures can be fake. 
 
-**Bharosa Jammu** transforms civic reporting into a closed trust loop:
-1. **Collective Voice**: Nearby complaints within 60m are coalesced into a single ticket with $N$ voices, elevating collective priority rather than creating duplicate clutter.
-2. **Transparent Priority Index**: Formula-based ranking ($0-100$) based on affected citizens, severity, age, safety hazard, and hospital/school proximity.
-3. **Verified Field Closure**: Field officers must provide an on-site photo with browser GPS verification ($\le 75\text{m}$) and perceptual hash uniqueness check.
-4. **Citizen Authority**: Closures are tentative until the citizen taps **"Solved: Yes/No"**. A "No" reopens and immediately escalates the grievance.
-5. **Ward Trust Index**: Live public accountability metric measuring each ward across 6 weighted dimensions.
+Traditional municipal grievance portals fail on the ground due to a fundamental breakdown of accountability:
+1. **Paper/Ghost Closures:** Field tickets are frequently marked "Resolved" without physical inspections.
+2. **Duplicate Noise & Clutter:** Neighbors reporting the same broken road create 10 redundant tickets that choke officer queues.
+3. **No Verifiable Ground Truth:** Complainants upload random stock photos while officers resolve tickets from distant desks.
+4. **Zero Citizen Authority:** The municipality unilaterally decides when an issue is closed, leaving citizens helpless if the problem persists.
+
+**CivicHelp Jammu** turns grievance management into a closed-loop civic accountability operating system:
+- **Zero-Login Quick Reporting:** In-browser live camera viewfinder with auto-locked GPS — strictly blocking internet/gallery photo spam.
+- **Collective Voice (AI Spatial Clustering):** Automatically merges nearby duplicate reports ($\le 60\text{m}$) into a single high-priority ticket with elevated citizen weight.
+- **Real-Time Officer Sync:** Live background sync alerts field officers instantly with the citizen's photo proof visible directly on dashboard cards.
+- **Two-Way Citizen Verification:** No ticket can permanently close without the reporting citizen's confirmation and written feedback. Unsatisfied citizens can reopen tickets with a single click.
+- **Multi-Lingual Regional Access:** Instant one-click translation into regional languages (**English, हिन्दी, डोगरी, اردو, ਪੰਜਾਬੀ, کٲشُر**).
+- **Automated SLA Hierarchy Escalation:** Time-bound resolution counters trigger automated escalation: Junior Engineer $\rightarrow$ Executive Engineer $\rightarrow$ Municipal Commissioner.
 
 ---
 
-## 🚀 Quick Setup & Run (Zero External Dependencies)
+## 🌟 Key Innovations & Features
+
+### 1. 📸 Anti-Fraud Ground Intake
+- **Viewfinder-Only Camera:** Directly taps into the device camera stream (`navigator.mediaDevices`), preventing stock images or fake photos from being selected.
+- **Auto-Locked GPS & Fallback:** Pinpoints high-accuracy coordinates with seamless fallback across all 75 municipal wards of Jammu.
+- **Offline-to-Online QR Campaign:** Designed for physical city-wide QR posters at bus stops, markets, and ward offices.
+
+### 2. ⚡ Real-Time Officer Action Console (`/officer`)
+- **Direct Citizen Photo Proof:** Each complaint card displays the complainant's photo thumbnail with a full-resolution inspection modal.
+- **Instant Toast Notification:** When a citizen submits a grievance in one tab, the officer console pops up a real-time toast alert at the bottom-right and prioritizes the ticket to the top.
+- **Documented After-Repair Evidence:** Officers upload an after-repair photo proof (camera or gallery) before marking work complete.
+- **Public Delay Reasons:** If materials or inter-departmental clearances cause delays, officers openly declare reasons (visible to citizens).
+
+### 3. 🔄 Public Citizen Tracker & Feedback Loop (`/t/[code]`)
+- **Track & Feedback Navigation Tool:** One-click navbar button with popup search to quickly look up any complaint ID (e.g. `BH-0001`).
+- **Before vs After Visual Proof:** Citizens compare the original grievance photo side-by-side with the officer's field repair proof.
+- **Citizen Final Say:**
+  - **Yes, Issue is Resolved! ✅:** Closes the ticket permanently with citizen comments and feedback.
+  - **No, Problem Still Exists 🔄:** Opens an inline description form to explain what is still wrong and reopens the complaint immediately for the officer.
+- **SHA-256 Chained Audit Timeline:** Every milestone (created, assigned, clustered, resolved, reopened) is cryptographically logged.
+
+### 4. 🌐 Radical Transparency & City Trust (`/`)
+- **City Trust Dashboard:** Real-time civic health score, verified resolution percentages, and ward leaderboard across all 75 wards of Jammu.
+- **Public Accountability:** Ward rankings based on response time, closure rate, reopen rate, citizen satisfaction, and proactive broadcasts.
+
+---
+
+## 📱 Application Routes
+
+| Route | Name | Purpose |
+|---|---|---|
+| `/` | **Public Trust Portal** | 75 Wards civic leaderboard, verified metrics, regional language switcher. |
+| `/report` | **Citizen Quick-Report** | Zero-login 30s reporting via live camera stream + GPS auto-lock. |
+| `/t/[code]` | **Citizen Tracking & Feedback** | Before/After visual comparison, audit trail, and citizen feedback (Confirm / Reopen). |
+| `/officer` | **Officer Action Console** | Priority queue, real-time toast alerts, citizen photo thumbnails. |
+| `/officer/t/[id]` | **Resolution Console** | Upload after-repair proof, declare public delays, submit resolution. |
+| `/admin` | **Commissioner HQ** | Department workloads, SLA breach escalation monitors, city-wide audit events. |
+| `/ward/[id]` | **Ward Deep Dive** | 6-component municipal trust score breakdown and historical trends. |
+
+---
+
+## 🚀 Quick Setup & Run
 
 ### 1. Requirements
 - Python 3.11+
-- Node.js 18+ (tested with v22)
+- Node.js 18+ (tested on v20 & v22)
+- Git
 
-### 2. Run Backend
+### 2. Run Backend (FastAPI)
 ```powershell
-cd bharosa
-$env:PYTHONPATH="."
-python backend/seed/seed.py
+# In repository root
 python -m uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
+API Documentation will be live at `http://localhost:8000/docs`.
 
-### 3. Run Frontend
+### 3. Run Frontend (Next.js)
 ```powershell
-cd bharosa/frontend
+cd frontend
+npm install
 npm run dev
 ```
 Open **`http://localhost:3000`** in your browser.
 
 ---
 
-## 🧪 Automated Test Suite
-To run all unit and integration tests covering P0 through P4:
-```powershell
-cd bharosa
-$env:PYTHONPATH="."
-pytest backend/tests/ -v
-```
-**Results: 13 / 13 Passed.**
-- `test_p0_foundation.py`: Health endpoint, database seed idempotency, simulated clock offset.
-- `test_p1_intake.py`: Collective voice (3 nearby reports → 1 ticket with affected count = 3), category separation, public ticket API.
-- `test_p2_closure.py`: Officer PIN login, verified closure, citizen reopen with escalation +1, perceptual hash duplicate photo rejection, SHA-256 audit chain tamper detection.
-- `test_p3_p4_trust_broadcast.py`: Ward Trust Index bounds ($0-100$), proactive broadcasts delivery to target ward, time advancement and SLA escalation.
+## 🧪 Demo Data & Quick Testing
+To demo the full feedback loop out of the box:
+1. Open **`http://localhost:3000`**
+2. Click **"Track & Feedback"** in the top navbar.
+3. Enter Demo Ticket ID: **`BH-0001`**
+4. Review Before & After repair photos and test the **Citizen Feedback** (Confirm Resolution or Reopen with comments).
 
 ---
 
-## 📱 Routes & Features
-| Route | Description |
-|---|---|
-| `/` | **City Trust View**: Public Ward Trust Index, live leaderboard, Ward Champion badge, city-wide KPIs. |
-| `/ward/[id]` | **Ward Deep Dive**: 6-component breakdown (Response, Closure, Reopen, Satisfaction, Proactive, Participation) + 30-day trajectory. |
-| `/t/[code]` | **Public Ticket Tracker**: Explainable priority score & reasons, before/after proof photos, cryptographic SHA-256 audit chain. |
-| `/officer` | **Mobile Officer Portal**: Mobile-first priority action inbox with SLA chips (green/amber/red). PIN: `1234`. |
-| `/officer/t/[id]` | **Resolution Console**: Accept work, declare public delay reason, capture after-repair photo + GPS geotag. |
-| `/admin` | **Commissioner HQ**: Heatmap points, officer workload, proactive broadcast composer. |
-| `/sim` | **WhatsApp Simulator**: Web chat simulator for zero-dependency live conversation with intake state machine. |
-| `/demo` | **90-Second Demo Panel**: Master control panel for live presentations (simulate 3-person reports, fast-forward time, citizen replies). |
-
----
-
-## ⏱️ 90-Second Hackathon Demo Script
-See [`DEMO_CHECKLIST.md`](./DEMO_CHECKLIST.md) for the complete, step-by-step judge demonstration guide.
+## 📄 License & Attribution
+Developed for the **Jammu Smart City Hackathon** by **jaisoni-codes** (`jaisonix11@gmail.com`).  
+*CivicHelp Jammu — An open civic trust and accountability initiative for Jammu Municipal Corporation (JMC).*
