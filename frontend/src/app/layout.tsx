@@ -6,8 +6,8 @@ import Navbar from "@/components/Navbar";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Bharosa Jammu | Civic Trust Engine",
-  description: "A WhatsApp-first civic trust engine for Jammu Smart City Hackathon",
+  title: "CivicHelp Jammu | Civic Trust Engine",
+  description: "A verifiable civic trust engine for Jammu Smart City Hackathon",
 };
 
 export default function RootLayout({
@@ -23,7 +23,7 @@ export default function RootLayout({
         <footer className="border-t bg-white py-6 text-center text-xs text-slate-500">
           <div className="max-w-7xl mx-auto px-4 space-y-1">
             <p className="font-semibold text-slate-700">
-              Bharosa Jammu — Built for Jammu Smart City Hackathon (Category 05: Welfare for All)
+              CivicHelp Jammu — Built for Jammu Smart City Hackathon (Category 05: Welfare for All)
             </p>
             <p>
               *Note: Historical grievance data shown is synthetic for presentation purposes. Live ticket flow and audit chains are cryptographically real.

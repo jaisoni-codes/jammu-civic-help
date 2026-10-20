@@ -178,8 +178,8 @@ export default function OfficerInboxPage() {
             <div className="w-12 h-12 bg-emerald-100 text-emerald-800 rounded-xl flex items-center justify-center mx-auto mb-3">
               <UserCheck className="w-6 h-6" />
             </div>
-            <h1 className="text-xl font-bold text-slate-900">Officer Mobile Portal</h1>
-            <p className="text-xs text-slate-500 mt-1">Login with seeded Officer ID & 4-digit PIN</p>
+            <h1 className="text-xl font-bold text-slate-900">CivicHelp Officer Portal</h1>
+            <p className="text-xs text-slate-500 mt-1">JMC Field Officer Inbox & Verified Resolution Console</p>
           </div>
 
           {loginError && (

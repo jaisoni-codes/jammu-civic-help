@@ -137,7 +137,7 @@ export default function ChatSimulatorPage() {
         <ChevronLeft className="w-5 h-5 opacity-80" />
         <div className="w-9 h-9 rounded-full bg-[#128C7E] flex items-center justify-center text-sm font-black shrink-0">JMC</div>
         <div className="flex-1 min-w-0">
-          <p className="font-bold text-sm leading-tight">JMC Bharosa Helpline</p>
+          <p className="font-bold text-sm leading-tight">CivicHelp Jammu Helpline</p>
           <p className="text-[10px] opacity-75">🟢 Online · Jammu Smart City</p>
         </div>
         <div className="flex gap-3 opacity-80">

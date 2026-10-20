@@ -11,7 +11,7 @@ export default function Navbar() {
           </div>
           <div>
             <span className="font-extrabold text-xl tracking-tight text-slate-900 block leading-tight">
-              Bharosa Jammu <span className="text-xs bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-semibold ml-1">भरोसा जम्मू</span>
+              CivicHelp <span className="text-xs bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-semibold ml-1">Jammu</span>
             </span>
             <span className="text-xs text-slate-500 font-medium">Jammu Smart City Civic Trust Engine</span>
           </div>

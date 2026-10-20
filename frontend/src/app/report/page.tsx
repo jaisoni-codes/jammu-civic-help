@@ -165,10 +165,10 @@ export default function QuickReportPage() {
           </div>
           <div>
             <h1 className="text-base font-extrabold text-slate-900 leading-tight">
-              Jammu Civic Quick-Report
+              CivicHelp Quick-Report
             </h1>
             <p className="text-[11px] text-slate-500">
-              Zero Login · Instant GPS · AI Authenticity Verified
+              CivicHelp Jammu · Zero Login · Instant GPS · AI Verified
             </p>
           </div>
         </div>
