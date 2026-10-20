@@ -434,7 +434,7 @@ class FeedbackRequest(BaseModel):
     reason: Optional[str] = None
 
 @router.post("/tickets/{code}/verify")
-def citizen_verify_resolved(code: str, db: Session = Depends(get_db)):
+def citizen_verify_resolved(code: str, req: Optional[FeedbackRequest] = None, db: Session = Depends(get_db)):
     """Citizen confirms the repair is complete and satisfactory — closes the ticket."""
     ticket = db.query(Ticket).filter(Ticket.code == code).first()
     if not ticket:
@@ -446,13 +446,15 @@ def citizen_verify_resolved(code: str, db: Session = Depends(get_db)):
     from backend.app import clock as _clock
     ticket.closed_at = _clock.now()
 
+    comment_text = req.reason if (req and req.reason) else "Citizen confirmed resolution"
+
     append_ticket_event(
         db,
         ticket_id=ticket.id,
         event_type="verified_closed",
         actor_type="citizen",
         actor_id="web_citizen",
-        payload={"feedback": "satisfied", "channel": "web_portal"},
+        payload={"feedback": "satisfied", "comment": comment_text, "channel": "web_portal"},
         timestamp=_clock.now()
     )
     db.commit()
@@ -472,13 +474,15 @@ def citizen_reopen_ticket(code: str, req: FeedbackRequest, db: Session = Depends
     ticket.reopen_count = (ticket.reopen_count or 0) + 1
 
     from backend.app import clock as _clock
+    reopen_comment = req.reason or "Not satisfied with resolution"
+
     append_ticket_event(
         db,
         ticket_id=ticket.id,
         event_type="reopened",
         actor_type="citizen",
         actor_id="web_citizen",
-        payload={"reason": req.reason or "Not satisfied with resolution", "channel": "web_portal"},
+        payload={"reason": reopen_comment, "comment": reopen_comment, "channel": "web_portal"},
         timestamp=_clock.now()
     )
     db.commit()
