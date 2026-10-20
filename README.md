@@ -29,13 +29,13 @@ Traditional municipal grievance portals fail on the ground due to a fundamental 
 - **Auto-Locked GPS & Fallback:** Pinpoints high-accuracy coordinates with seamless fallback across all 75 municipal wards of Jammu.
 - **Offline-to-Online QR Campaign:** Designed for physical city-wide QR posters at bus stops, markets, and ward offices.
 
-### 2. ⚡ Real-Time Officer Action Console (`/officer`)
+### 2. ⚡ Real-Time Officer Action Console
 - **Direct Citizen Photo Proof:** Each complaint card displays the complainant's photo thumbnail with a full-resolution inspection modal.
 - **Instant Toast Notification:** When a citizen submits a grievance in one tab, the officer console pops up a real-time toast alert at the bottom-right and prioritizes the ticket to the top.
 - **Documented After-Repair Evidence:** Officers upload an after-repair photo proof (camera or gallery) before marking work complete.
 - **Public Delay Reasons:** If materials or inter-departmental clearances cause delays, officers openly declare reasons (visible to citizens).
 
-### 3. 🔄 Public Citizen Tracker & Feedback Loop (`/t/[code]`)
+### 3. 🔄 Public Citizen Tracker & Feedback Loop
 - **Track & Feedback Navigation Tool:** One-click navbar button with popup search to quickly look up any complaint ID (e.g. `BH-0001`).
 - **Before vs After Visual Proof:** Citizens compare the original grievance photo side-by-side with the officer's field repair proof.
 - **Citizen Final Say:**
@@ -43,7 +43,7 @@ Traditional municipal grievance portals fail on the ground due to a fundamental 
   - **No, Problem Still Exists 🔄:** Opens an inline description form to explain what is still wrong and reopens the complaint immediately for the officer.
 - **SHA-256 Chained Audit Timeline:** Every milestone (created, assigned, clustered, resolved, reopened) is cryptographically logged.
 
-### 4. 🌐 Radical Transparency & City Trust (`/`)
+### 4. 🌐 Radical Transparency & City Trust Dashboard
 - **City Trust Dashboard:** Real-time civic health score, verified resolution percentages, and ward leaderboard across all 75 wards of Jammu.
 - **Public Accountability:** Ward rankings based on response time, closure rate, reopen rate, citizen satisfaction, and proactive broadcasts.
 
