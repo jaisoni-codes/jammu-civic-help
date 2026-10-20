@@ -194,6 +194,10 @@ export default function OfficerInboxPage() {
     sortTickets(tickets.filter(t => PENDING_STATUSES.includes(t.status)), sortKey),
     [tickets, sortKey]
   );
+  const reopenedTickets  = useMemo(() =>
+    sortTickets(tickets.filter(t => t.status === "reopened"), sortKey),
+    [tickets, sortKey]
+  );
   const awaitingTickets  = useMemo(() =>
     sortTickets(tickets.filter(t => t.status === "resolved_pending_verification"), sortKey),
     [tickets, sortKey]
@@ -292,7 +296,8 @@ export default function OfficerInboxPage() {
       <div className="flex gap-1 bg-slate-100 p-1 rounded-xl">
         {[
           { key: "pending",   label: "Pending",           count: pendingTickets.length,   icon: Clock,         color: "text-amber-700" },
-          { key: "awaiting",  label: "Awaiting Verify",   count: awaitingTickets.length,  icon: AlertTriangle, RotateCcw, color: "text-purple-700" },
+          { key: "reopened",  label: "Reopened by Citizen", count: reopenedTickets.length,  icon: RotateCcw,     color: "text-red-700" },
+          { key: "awaiting",  label: "Awaiting Verify",   count: awaitingTickets.length,  icon: AlertTriangle, color: "text-purple-700" },
           { key: "completed", label: "Completed",         count: completedTickets.length, icon: CheckCircle,   color: "text-emerald-700" },
         ].map(({ key, label, count, icon: Icon, color }) => (
           <button
