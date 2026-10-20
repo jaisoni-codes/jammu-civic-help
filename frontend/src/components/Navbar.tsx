@@ -27,11 +27,8 @@ export default function Navbar() {
           <Link href="/admin" className="text-slate-700 hover:text-emerald-700 px-2 py-1 flex items-center gap-1.5 hidden md:flex">
             <ShieldCheck className="w-4 h-4" /> Admin HQ
           </Link>
-          <Link href="/sim" className="text-slate-700 hover:text-emerald-700 px-2 py-1 flex items-center gap-1.5">
-            <MessageSquare className="w-4 h-4 text-emerald-600" /> WhatsApp Sim
-          </Link>
           <Link href="/report" className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow flex items-center gap-1">
-            <Zap className="w-3.5 h-3.5" /> ⚡ Report (QR)
+            <Zap className="w-3.5 h-3.5" /> ⚡ Report Grievance
           </Link>
         </nav>
       </div>
