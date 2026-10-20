@@ -377,14 +377,14 @@ export default function QuickReportPage() {
         {/* Description Text */}
         <div>
           <label className="text-xs font-bold text-slate-700 block mb-1">
-            📝 Describe the Grievance (Hindi or English)
+            📝 Describe the Grievance
           </label>
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
             rows={3}
             required
-            placeholder="e.g. Main road par bada gaddha hai, ya 3 din se garbage nahi utha..."
+            placeholder="Describe the civic issue or problem..."
             className="w-full text-xs p-3 border rounded-xl outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50 focus:bg-white resize-none"
           />
         </div>
