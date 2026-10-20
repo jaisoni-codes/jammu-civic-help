@@ -22,11 +22,11 @@ export default function RootLayout({
         <main className="flex-1">{children}</main>
         <footer className="border-t bg-white py-6 text-center text-xs text-slate-500">
           <div className="max-w-7xl mx-auto px-4 space-y-1">
-            <p className="font-semibold text-slate-700">
-              CivicHelp Jammu — Built for Jammu Smart City Hackathon (Category 05: Welfare for All)
+            <p className="font-semibold text-slate-800">
+              CivicHelp Jammu — Jammu Municipal Corporation (JMC) Citizen Services
             </p>
-            <p>
-              *Note: Historical grievance data shown is synthetic for presentation purposes. Live ticket flow and audit chains are cryptographically real.
+            <p className="text-slate-400">
+              An open civic accountability initiative for verified municipal closures across all 75 wards of Jammu.
             </p>
           </div>
         </footer>
