@@ -4,12 +4,12 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
 import { 
   UserCheck, RefreshCw, ArrowRight,
-  Clock, CheckCircle, AlertTriangle,
+  Clock, CheckCircle, AlertTriangle, RotateCcw,
   ArrowDownUp, CalendarClock, Flame, TrendingUp, Bell, Image as ImageIcon, Eye, X
 } from "lucide-react";
 import { officerLogin, fetchOfficerTickets } from "@/lib/api";
 
-const PENDING_STATUSES = ["open", "assigned", "in_progress", "reopened"];
+const PENDING_STATUSES = ["open", "assigned", "in_progress"];
 const COMPLETED_STATUSES = ["resolved_pending_verification", "verified_closed", "unverified_closed"];
 
 type SortKey = "priority" | "newest" | "sla" | "escalation";
@@ -87,7 +87,7 @@ export default function OfficerInboxPage() {
   const isInitializedRef        = useRef<boolean>(false);
 
   // Tab: "pending" | "awaiting" | "completed"
-  const [tab, setTab]           = useState<"pending" | "awaiting" | "completed">("pending");
+  const [tab, setTab]           = useState<"pending" | "reopened" | "awaiting" | "completed">("pending");
   const [sortKey, setSortKey]   = useState<SortKey>("newest");
   const [previewPhoto, setPreviewPhoto] = useState<string | null>(null);
 
@@ -205,6 +205,7 @@ export default function OfficerInboxPage() {
 
   const activeList =
     tab === "pending"   ? pendingTickets :
+    tab === "reopened"  ? reopenedTickets :
     tab === "awaiting"  ? awaitingTickets :
     completedTickets;
 
@@ -291,7 +292,7 @@ export default function OfficerInboxPage() {
       <div className="flex gap-1 bg-slate-100 p-1 rounded-xl">
         {[
           { key: "pending",   label: "Pending",           count: pendingTickets.length,   icon: Clock,         color: "text-amber-700" },
-          { key: "awaiting",  label: "Awaiting Verify",   count: awaitingTickets.length,  icon: AlertTriangle, color: "text-purple-700" },
+          { key: "awaiting",  label: "Awaiting Verify",   count: awaitingTickets.length,  icon: AlertTriangle, RotateCcw, color: "text-purple-700" },
           { key: "completed", label: "Completed",         count: completedTickets.length, icon: CheckCircle,   color: "text-emerald-700" },
         ].map(({ key, label, count, icon: Icon, color }) => (
           <button
@@ -313,7 +314,7 @@ export default function OfficerInboxPage() {
       </div>
 
       {/* ── SORT BAR (only for pending) ── */}
-      {tab === "pending" && (
+      {(tab === "pending" || tab === "reopened") && (
         <div className="flex items-center gap-2 flex-wrap">
           <span className="text-xs font-semibold text-slate-500 flex items-center gap-1">
             <ArrowDownUp className="w-3.5 h-3.5" /> Sort by:
@@ -350,6 +351,7 @@ export default function OfficerInboxPage() {
         ) : activeList.length === 0 ? (
           <div className="bg-white rounded-xl p-10 text-center border">
             {tab === "pending"   && <p className="text-slate-500 text-sm">🎉 No pending tickets right now!</p>}
+            {tab === "reopened"  && <p className="text-slate-500 text-sm">🎉 No reopened complaints! All citizen grievances satisfied.</p>}
             {tab === "awaiting"  && <p className="text-slate-500 text-sm">No tickets awaiting citizen verification.</p>}
             {tab === "completed" && <p className="text-slate-500 text-sm">No completed tickets yet.</p>}
           </div>
